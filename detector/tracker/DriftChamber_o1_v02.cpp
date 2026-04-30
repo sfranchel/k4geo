@@ -262,9 +262,9 @@ static dd4hep::Ref_t create_DCH_o1_v02(dd4hep::Detector& desc, dd4hep::xml::Hand
 
     // unitary cell (Twisted tube) is repeated for each layer l.ncells times
     // Twisted tube parameters
-    DCH_angle_t cell_twistangle = DCH_i->StereoSign(l) * DCH_i->twist_angle;
-    DCH_length_t cell_rin_z0 = radius_fdw_z0 + 2 * safety_r_interspace;
-    DCH_length_t cell_rout_z0 = radius_fuw_z0 - 2 * safety_r_interspace;
+    DCH_angle_t cell_twistangle = DCH_i->twist_angle;
+    DCH_length_t cell_rin_z0 = (l.radius_sw_z0 - 0.5 * l.height_z0) + 2 * safety_r_interspace;
+    DCH_length_t cell_rout_z0 = (l.radius_sw_z0 + 0.5 * l.height_z0) - 2 * safety_r_interspace;
     DCH_length_t cell_rin_zLhalf = DCH_i->Radius_zLhalf(cell_rin_z0);
     DCH_length_t cell_rout_zLhalf = DCH_i->Radius_zLhalf(cell_rout_z0);
     DCH_length_t cell_dz = DCH_i->Lhalf;
@@ -298,7 +298,7 @@ static dd4hep::Ref_t create_DCH_o1_v02(dd4hep::Detector& desc, dd4hep::xml::Hand
         dd4hep::Volume swire_v(cell_name + "_swire", swire_s, dch_SWire_material);
         swire_v.setVisAttributes(wiresVis);
         // Change sign of stereo angle to place properly the wire inside the twisted tube
-        dd4hep::RotationX stereoTr((-1.) * DCH_i->StereoSign(l) * DCH_i->stereoangle_z0(cell_rave_z0));
+        dd4hep::RotationX stereoTr(DCH_i->stereoangle_z0(cell_rave_z0));
         dd4hep::Transform3D swireTr(stereoTr * dd4hep::Translation3D(cell_rave_z0, 0., 0.));
         cell_v.placeVolume(swire_v, swireTr);
       }
@@ -356,7 +356,7 @@ static dd4hep::Ref_t create_DCH_o1_v02(dd4hep::Detector& desc, dd4hep::xml::Hand
         {
           DCH_length_t fwire_radius = dch_FCentralWire_thickness / 2;
           DCH_length_t fwire_r_z0 = cell_rave_z0;
-          DCH_angle_t fwire_stereo = (-1.) * DCH_i->StereoSign(l) * DCH_i->stereoangle_z0(fwire_r_z0);
+          DCH_angle_t fwire_stereo = DCH_i->stereoangle_z0(fwire_r_z0);
           DCH_angle_t fwire_phi = -cell_phi_width / 2 + fwire_phi_offset(fwire_r_z0, fwire_radius);
           DCH_length_t fwire_length = 0.5 * DCH_i->WireLength(ilayer, fwire_r_z0) -
                                       fwire_radius * cos(DCH_i->stereoangle_z0(fwire_r_z0)) - safety_z_interspace;
@@ -379,7 +379,7 @@ static dd4hep::Ref_t create_DCH_o1_v02(dd4hep::Detector& desc, dd4hep::xml::Hand
           DCH_length_t fwire_radius = dch_FSideWire_thickness / 2;
           // decrease radial distance, move it closer to the sense wire
           DCH_length_t fwire_r_z0 = cell_rout_z0 - fwire_radius;
-          DCH_angle_t fwire_stereo = (-1.) * DCH_i->StereoSign(l) * DCH_i->stereoangle_z0(fwire_r_z0);
+          DCH_angle_t fwire_stereo = DCH_i->stereoangle_z0(fwire_r_z0);
           DCH_angle_t fwire_phi = -cell_phi_width / 2 + fwire_phi_offset(fwire_r_z0, fwire_radius);
           DCH_length_t fwire_length = 0.5 * DCH_i->WireLength(ilayer, fwire_r_z0) -
                                       fwire_radius * cos(DCH_i->stereoangle_z0(fwire_r_z0)) - safety_z_interspace;
@@ -401,7 +401,7 @@ static dd4hep::Ref_t create_DCH_o1_v02(dd4hep::Detector& desc, dd4hep::xml::Hand
           DCH_length_t fwire_radius = dch_FSideWire_thickness / 2;
           // increase radial distance, move it closer to the sense wire
           DCH_length_t fwire_r_z0 = cell_rin_z0 + fwire_radius;
-          DCH_angle_t fwire_stereo = (-1.) * DCH_i->StereoSign(l) * DCH_i->stereoangle_z0(fwire_r_z0);
+          DCH_angle_t fwire_stereo = DCH_i->stereoangle_z0(fwire_r_z0);
           DCH_angle_t fwire_phi = -cell_phi_width / 2 + fwire_phi_offset(fwire_r_z0, fwire_radius);
           DCH_length_t fwire_length = 0.5 * DCH_i->WireLength(ilayer, fwire_r_z0) -
                                       fwire_radius * cos(DCH_i->stereoangle_z0(fwire_r_z0)) - safety_z_interspace;
@@ -423,7 +423,7 @@ static dd4hep::Ref_t create_DCH_o1_v02(dd4hep::Detector& desc, dd4hep::xml::Hand
           DCH_length_t fwire_radius = dch_FSideWire_thickness / 2;
           // increase radial distance, move it closer to the sense wire
           DCH_length_t fwire_r_z0 = cell_rin_z0 + fwire_radius;
-          DCH_angle_t fwire_stereo = (-1.) * DCH_i->StereoSign(l) * DCH_i->stereoangle_z0(fwire_r_z0);
+          DCH_angle_t fwire_stereo = DCH_i->stereoangle_z0(fwire_r_z0);
           DCH_length_t fwire_length = 0.5 * DCH_i->WireLength(ilayer, fwire_r_z0) -
                                       fwire_radius * cos(DCH_i->stereoangle_z0(fwire_r_z0)) - safety_z_interspace;
 
@@ -443,7 +443,7 @@ static dd4hep::Ref_t create_DCH_o1_v02(dd4hep::Detector& desc, dd4hep::xml::Hand
           DCH_length_t fwire_radius = dch_FSideWire_thickness / 2;
           // increase radial distance, move it closer to the sense wire
           DCH_length_t fwire_r_z0 = cell_rout_z0 - fwire_radius;
-          DCH_angle_t fwire_stereo = (-1.) * DCH_i->StereoSign(l) * DCH_i->stereoangle_z0(fwire_r_z0);
+          DCH_angle_t fwire_stereo = DCH_i->stereoangle_z0(fwire_r_z0);
           DCH_length_t fwire_length = 0.5 * DCH_i->WireLength(ilayer, fwire_r_z0) -
                                       fwire_radius * cos(DCH_i->stereoangle_z0(fwire_r_z0)) - safety_z_interspace;
 
@@ -465,7 +465,8 @@ static dd4hep::Ref_t create_DCH_o1_v02(dd4hep::Detector& desc, dd4hep::xml::Hand
       // phi positioning, adding offset for odd ilayers
       DCH_angle_t cell_phi_angle = phi_step * nphi + 0.25 * cell_phi_width * (ilayer % 2);
       // conversion of RotationZ into Transform3D using constructor)
-      dd4hep::Transform3D cellTr{dd4hep::RotationZ(cell_phi_angle)};
+      double x_flip = (DCH_i->StereoSign(l) > 0) ? 0. : 2 * DCH_i->stereoangle_z0(l.radius_sw_z0); //-2 * l.stereo_sw_z0
+      dd4hep::Transform3D cellTr(dd4hep::RotationZ(cell_phi_angle) * dd4hep::RotationX(x_flip));
       auto cell_pv = layer_v.placeVolume(cell_v, cellTr);
       cell_pv.addPhysVolID("nphi", nphi);
       cell_pv.addPhysVolID("stereosign", DCH_i->StereoSign(l));
@@ -504,8 +505,6 @@ dd4hep::Solid CompositeTT(double twist_angle, double cell_rin_z0, double cell_ro
 
   double poly_angle = dphi / 2;
   double twist_angle_half = twist_angle / 2.;
-  // change sign, so the final shape has the same orientation as G4 twisted tube
-  twist_angle_half *= -1; // not sure about this
 
   // define points of 8 genenric trapezoid
   struct point2d {
