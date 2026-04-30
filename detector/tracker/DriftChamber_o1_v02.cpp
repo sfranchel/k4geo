@@ -524,6 +524,16 @@ dd4hep::Solid CompositeTT(double twist_angle, double cell_rin_z0, double cell_ro
 
   // The generic trapezoid is built in such a manner as to circumscribe the twisted tube
   // The following points correspond to the corners of the twisted tube
+  //
+  //         -D===========================D
+  //         /|                          /|
+  //        / |                         / |
+  //      -C===========================C  |           X
+  //       |  |                        |  |           |
+  //       | -A - - - - - - - - - - - -|- A           |
+  //       | /                         | /            +----- Z
+  //       |/                          |/            /
+  //      -B===========================B            Y
 
   fZpos.A = {trap_rin * cos(poly_angle + twist_angle_half), trap_rin * sin(poly_angle + twist_angle_half)};
   fZpos.B = {trap_rin * cos(-poly_angle + twist_angle_half), trap_rin * sin(-poly_angle + twist_angle_half)};
