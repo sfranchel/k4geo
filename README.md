@@ -1,3 +1,8 @@
+# Impact of floating point precision on DCH hits
+> [!WARNING]
+> [VALIDATION](./VALIDATION/) Folder contains minimal example to reproduce 
+the observed impact of floating point precision on DCH hits.
+
 # lcgeo (Lepton Collider Geometry)
 [![DOI](https://zenodo.org/badge/60772160.svg)](https://doi.org/10.5281/zenodo.596333)
 [![Key4hep build](https://github.com/key4hep/k4geo/actions/workflows/key4hep-build.yaml/badge.svg)](https://github.com/key4hep/k4geo/actions/workflows/key4hep-build.yaml)

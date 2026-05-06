@@ -18,6 +18,7 @@
 #include "XML/Utilities.h"
 
 #include "DDRec/DCH_info.h"
+#include <cassert>
 
 namespace DCH_v2 {
 
@@ -221,11 +222,22 @@ static dd4hep::Ref_t create_DCH_o1_v02(dd4hep::Detector& desc, dd4hep::xml::Hand
     // // // // // // // // // // // // // // // // // // // //
     // Hyperboloid parameters:
     /// inner radius at z=0
-    DCH_length_t rin = l.radius_fdw_z0 + safety_r_interspace;
+
+    DCH_length_t radius_fdw_z0 = l.radius_sw_z0 - 0.5 * l.height_z0;
+    DCH_length_t radius_fuw_z0 = l.radius_sw_z0 + 0.5 * l.height_z0;
+
+    std::cout.precision(std::numeric_limits<double>::max_digits10 - 1);
+    std::cout<< std::scientific << "layer " << ilayer << " -- diff radius_fdw_z0 = "<< radius_fdw_z0 - l.radius_fdw_z0<<std::endl;
+    std::cout<< std::scientific << "layer " << ilayer << " -- diff radius_fuw_z0 = "<< radius_fuw_z0 - l.radius_fuw_z0<<std::endl;
+
+    if(std::abs(radius_fdw_z0 - l.radius_fdw_z0) > 1e-13) throw std::invalid_argument( "inconsistent values for radius_fdw_z0!" );
+    if(std::abs(radius_fuw_z0 - l.radius_fuw_z0) > 1e-13) throw std::invalid_argument( "inconsistent values for radius_fuw_z0!" );
+
+    DCH_length_t rin = radius_fdw_z0 + safety_r_interspace;
     /// inner stereoangle, calculated from rin(z=0)
     DCH_angle_t stin = DCH_i->stereoangle_z0(rin);
     /// outer radius at z=0
-    DCH_length_t rout = l.radius_fuw_z0 - safety_r_interspace;
+    DCH_length_t rout = radius_fuw_z0 - safety_r_interspace;
     /// outer stereoangle, calculated from rout(z=0)
     DCH_angle_t stout = DCH_i->stereoangle_z0(rout);
     /// half-length
@@ -261,8 +273,8 @@ static dd4hep::Ref_t create_DCH_o1_v02(dd4hep::Detector& desc, dd4hep::xml::Hand
     // unitary cell (Twisted tube) is repeated for each layer l.nwires/2 times
     // Twisted tube parameters
     DCH_angle_t cell_twistangle = l.StereoSign() * DCH_i->twist_angle;
-    DCH_length_t cell_rin_z0 = l.radius_fdw_z0 + 2 * safety_r_interspace;
-    DCH_length_t cell_rout_z0 = l.radius_fuw_z0 - 2 * safety_r_interspace;
+    DCH_length_t cell_rin_z0 = radius_fdw_z0 + 2 * safety_r_interspace;
+    DCH_length_t cell_rout_z0 = radius_fuw_z0 - 2 * safety_r_interspace;
     DCH_length_t cell_rin_zLhalf = DCH_i->Radius_zLhalf(cell_rin_z0);
     DCH_length_t cell_rout_zLhalf = DCH_i->Radius_zLhalf(cell_rout_z0);
     DCH_length_t cell_dz = DCH_i->Lhalf;
