@@ -263,8 +263,8 @@ static dd4hep::Ref_t create_DCH_o1_v02(dd4hep::Detector& desc, dd4hep::xml::Hand
     // unitary cell (Twisted tube) is repeated for each layer l.ncells times
     // Twisted tube parameters
     DCH_angle_t cell_twistangle = DCH_i->twist_angle;
-    DCH_length_t cell_rin_z0 = (l.radius_sw_z0 - 0.5 * l.height_z0) + 2 * safety_r_interspace;
-    DCH_length_t cell_rout_z0 = (l.radius_sw_z0 + 0.5 * l.height_z0) - 2 * safety_r_interspace;
+    DCH_length_t cell_rin_z0 = radius_fdw_z0 + 2 * safety_r_interspace;
+    DCH_length_t cell_rout_z0 = radius_fuw_z0 - 2 * safety_r_interspace;
     DCH_length_t cell_rin_zLhalf = DCH_i->Radius_zLhalf(cell_rin_z0);
     DCH_length_t cell_rout_zLhalf = DCH_i->Radius_zLhalf(cell_rout_z0);
     DCH_length_t cell_dz = DCH_i->Lhalf;
@@ -465,7 +465,7 @@ static dd4hep::Ref_t create_DCH_o1_v02(dd4hep::Detector& desc, dd4hep::xml::Hand
       // phi positioning, adding offset for odd ilayers
       DCH_angle_t cell_phi_angle = phi_step * nphi + 0.25 * cell_phi_width * (ilayer % 2);
       // conversion of RotationZ into Transform3D using constructor)
-      double x_flip = (DCH_i->StereoSign(l) > 0) ? 0. : 2 * DCH_i->stereoangle_z0(l.radius_sw_z0); //-2 * l.stereo_sw_z0
+      double x_flip = (DCH_i->StereoSign(l) > 0) ? 0. : 2. * DCH_i->stereoangle_z0(l.radius_sw_z0); //-2 * l.stereo_sw_z0
       dd4hep::Transform3D cellTr(dd4hep::RotationZ(cell_phi_angle) * dd4hep::RotationX(x_flip));
       auto cell_pv = layer_v.placeVolume(cell_v, cellTr);
       cell_pv.addPhysVolID("nphi", nphi);
