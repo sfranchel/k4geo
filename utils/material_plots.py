@@ -112,6 +112,8 @@ def main():
 
     axis_titles = ["Material budget x/X_{0} [%] ", "Number of #lambda", "Material depth [cm]"]
 
+    print(histDict.keys())
+
     # This loop does the drawing, sets the style and saves the pdf files
     for plot, title in zip(["x0", "lambda", "depth"], axis_titles):
         if args.angleDef == "eta":
@@ -131,18 +133,17 @@ def main():
         ths = ROOT.THStack()
 
         # sort by list of values: To do so set reorder = True and define your desired order of the materials in the "order" list
-        reorder = False
+        reorder = True
         histDict_ordered = {}
         if reorder:
             order = [
-                "Silicon",
-                "CarbonFiber",
-                "CarbonFleece",
-                "Rohacell",
-                "Aluminum",
-                "GlueEcobond45",
-                "Kapton",
-                "Water",
+                'DCH_FSideWireMat',
+                'DCH_FCentralWireMat',
+                'DCH_SWireMat',
+                'PolystyreneFoam',
+                'GasHe_90Isob_10',
+                'CarbonFibStr',
+                'Air',
             ]
             ordered_list = sorted(histDict.items(), key=lambda pair: order.index(pair[0]))
 
@@ -179,6 +180,8 @@ def main():
                     fillcolor = FCCStyle.fillcolors[5]
                 case "PCB":
                     fillcolor = ROOT.kGreen
+                case "Air":
+                    fillcolor = ROOT.kWhite
 
             histDict_ordered[material][plot].SetLineColor(linecolor)
             histDict_ordered[material][plot].SetFillColor(fillcolor)
@@ -205,6 +208,11 @@ def main():
         cv.Print(plot + ".png")
         cv.SaveAs(plot + ".root")
 
+        with ROOT.TFile.Open(plot + ".root","UPDATE") as fout:
+            for material in histDict.keys():
+                histDict_ordered[material][plot].SetName(material)
+                histDict_ordered[material][plot].SetTitle(f";{xtitle};{title}")
+                histDict_ordered[material][plot].Write()
 
 if __name__ == "__main__":
     FCCStyle.initialize()
