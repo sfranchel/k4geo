@@ -298,7 +298,7 @@ static dd4hep::Ref_t create_DCH_o1_v02(dd4hep::Detector& desc, dd4hep::xml::Hand
         dd4hep::Volume swire_v(cell_name + "_swire", swire_s, dch_SWire_material);
         swire_v.setVisAttributes(wiresVis);
         // Change sign of stereo angle to place properly the wire inside the twisted tube
-        dd4hep::RotationX stereoTr(DCH_i->stereoangle_z0(cell_rave_z0));
+        dd4hep::RotationX stereoTr((-1) * DCH_i->stereoangle_z0(cell_rave_z0));
         dd4hep::Transform3D swireTr(stereoTr * dd4hep::Translation3D(cell_rave_z0, 0., 0.));
         cell_v.placeVolume(swire_v, swireTr);
       }
@@ -356,7 +356,7 @@ static dd4hep::Ref_t create_DCH_o1_v02(dd4hep::Detector& desc, dd4hep::xml::Hand
         {
           DCH_length_t fwire_radius = dch_FCentralWire_thickness / 2;
           DCH_length_t fwire_r_z0 = cell_rave_z0;
-          DCH_angle_t fwire_stereo = DCH_i->stereoangle_z0(fwire_r_z0);
+          DCH_angle_t fwire_stereo = (-1) * DCH_i->stereoangle_z0(fwire_r_z0);
           DCH_angle_t fwire_phi = -cell_phi_width / 2 + fwire_phi_offset(fwire_r_z0, fwire_radius);
           DCH_length_t fwire_length = 0.5 * DCH_i->WireLength(ilayer, fwire_r_z0) -
                                       fwire_radius * cos(DCH_i->stereoangle_z0(fwire_r_z0)) - safety_z_interspace;
@@ -379,7 +379,7 @@ static dd4hep::Ref_t create_DCH_o1_v02(dd4hep::Detector& desc, dd4hep::xml::Hand
           DCH_length_t fwire_radius = dch_FSideWire_thickness / 2;
           // decrease radial distance, move it closer to the sense wire
           DCH_length_t fwire_r_z0 = cell_rout_z0 - fwire_radius;
-          DCH_angle_t fwire_stereo = DCH_i->stereoangle_z0(fwire_r_z0);
+          DCH_angle_t fwire_stereo = (-1) * DCH_i->stereoangle_z0(fwire_r_z0);
           DCH_angle_t fwire_phi = -cell_phi_width / 2 + fwire_phi_offset(fwire_r_z0, fwire_radius);
           DCH_length_t fwire_length = 0.5 * DCH_i->WireLength(ilayer, fwire_r_z0) -
                                       fwire_radius * cos(DCH_i->stereoangle_z0(fwire_r_z0)) - safety_z_interspace;
@@ -401,7 +401,7 @@ static dd4hep::Ref_t create_DCH_o1_v02(dd4hep::Detector& desc, dd4hep::xml::Hand
           DCH_length_t fwire_radius = dch_FSideWire_thickness / 2;
           // increase radial distance, move it closer to the sense wire
           DCH_length_t fwire_r_z0 = cell_rin_z0 + fwire_radius;
-          DCH_angle_t fwire_stereo = DCH_i->stereoangle_z0(fwire_r_z0);
+          DCH_angle_t fwire_stereo = (-1) * DCH_i->stereoangle_z0(fwire_r_z0);
           DCH_angle_t fwire_phi = -cell_phi_width / 2 + fwire_phi_offset(fwire_r_z0, fwire_radius);
           DCH_length_t fwire_length = 0.5 * DCH_i->WireLength(ilayer, fwire_r_z0) -
                                       fwire_radius * cos(DCH_i->stereoangle_z0(fwire_r_z0)) - safety_z_interspace;
@@ -423,7 +423,7 @@ static dd4hep::Ref_t create_DCH_o1_v02(dd4hep::Detector& desc, dd4hep::xml::Hand
           DCH_length_t fwire_radius = dch_FSideWire_thickness / 2;
           // increase radial distance, move it closer to the sense wire
           DCH_length_t fwire_r_z0 = cell_rin_z0 + fwire_radius;
-          DCH_angle_t fwire_stereo = DCH_i->stereoangle_z0(fwire_r_z0);
+          DCH_angle_t fwire_stereo = (-1) * DCH_i->stereoangle_z0(fwire_r_z0);
           DCH_length_t fwire_length = 0.5 * DCH_i->WireLength(ilayer, fwire_r_z0) -
                                       fwire_radius * cos(DCH_i->stereoangle_z0(fwire_r_z0)) - safety_z_interspace;
 
@@ -443,7 +443,7 @@ static dd4hep::Ref_t create_DCH_o1_v02(dd4hep::Detector& desc, dd4hep::xml::Hand
           DCH_length_t fwire_radius = dch_FSideWire_thickness / 2;
           // increase radial distance, move it closer to the sense wire
           DCH_length_t fwire_r_z0 = cell_rout_z0 - fwire_radius;
-          DCH_angle_t fwire_stereo = DCH_i->stereoangle_z0(fwire_r_z0);
+          DCH_angle_t fwire_stereo = (-1) * DCH_i->stereoangle_z0(fwire_r_z0);
           DCH_length_t fwire_length = 0.5 * DCH_i->WireLength(ilayer, fwire_r_z0) -
                                       fwire_radius * cos(DCH_i->stereoangle_z0(fwire_r_z0)) - safety_z_interspace;
 
@@ -535,21 +535,23 @@ dd4hep::Solid CompositeTT(double twist_angle, double cell_rin_z0, double cell_ro
   //       |/                          |/            /
   //      -B===========================B            Y
 
-  fZpos.A = {trap_rin * cos(poly_angle + twist_angle_half), trap_rin * sin(poly_angle + twist_angle_half)};
-  fZpos.B = {trap_rin * cos(-poly_angle + twist_angle_half), trap_rin * sin(-poly_angle + twist_angle_half)};
+  fZneg.A = {trap_rin * cos(-poly_angle - twist_angle_half), trap_rin * sin(-poly_angle - twist_angle_half)};
+  fZneg.B = {trap_rin * cos(poly_angle - twist_angle_half),  trap_rin * sin(poly_angle - twist_angle_half)};
 
-  fZneg.A = {trap_rin * cos(poly_angle - twist_angle_half), trap_rin * sin(poly_angle - twist_angle_half)};
-  fZneg.B = {trap_rin * cos(-poly_angle - twist_angle_half), trap_rin * sin(-poly_angle - twist_angle_half)};
+  fZpos.A = {trap_rin * cos(-poly_angle + twist_angle_half), trap_rin * sin(-poly_angle + twist_angle_half)};
+  fZpos.B = {trap_rin * cos(poly_angle + twist_angle_half), trap_rin * sin(poly_angle + twist_angle_half)};
 
-  fZpos.C = {trap_rout * cos(poly_angle + twist_angle_half), trap_rout * sin(poly_angle + twist_angle_half)};
+  fZneg.C = {trap_rout * cos(poly_angle - twist_angle_half),  trap_rout * sin(poly_angle - twist_angle_half)};
+  fZneg.D = {trap_rout * cos(-poly_angle - twist_angle_half),  trap_rout * sin(-poly_angle - twist_angle_half)};
+
+  fZpos.C = {trap_rout * cos(poly_angle + twist_angle_half),  trap_rout * sin(poly_angle + twist_angle_half)};
   fZpos.D = {trap_rout * cos(-poly_angle + twist_angle_half), trap_rout * sin(-poly_angle + twist_angle_half)};
 
-  fZneg.C = {trap_rout * cos(poly_angle - twist_angle_half), trap_rout * sin(poly_angle - twist_angle_half)};
-  fZneg.D = {trap_rout * cos(-poly_angle - twist_angle_half), trap_rout * sin(-poly_angle - twist_angle_half)};
 
-  std::vector<double> vertices_array = {fZpos.B.x, fZpos.B.y, fZpos.A.x, fZpos.A.y, fZpos.C.x, fZpos.C.y,
-                                        fZpos.D.x, fZpos.D.y, fZneg.B.x, fZneg.B.y, fZneg.A.x, fZneg.A.y,
-                                        fZneg.C.x, fZneg.C.y, fZneg.D.x, fZneg.D.y};
+  std::vector<double> vertices_array = {fZneg.A.x, fZneg.A.y, fZneg.B.x, fZneg.B.y,
+                                        fZneg.C.x, fZneg.C.y, fZneg.D.x, fZneg.D.y,
+                                        fZpos.A.x, fZpos.A.y, fZpos.B.x, fZpos.B.y,
+                                        fZpos.C.x, fZpos.C.y, fZpos.D.x, fZpos.D.y};
 
   dd4hep::EightPointSolid gtrap_shape(dz, vertices_array.data());
 
